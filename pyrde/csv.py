@@ -6,8 +6,8 @@ from pyrde import reviewdog_pb2
 
 
 class CSVDiagnosticListener(pyrde.DiagnosticListener):
-    def __init__(self):
-        self.writer = csv.DictWriter(sys.stderr, fieldnames=[
+    def __init__(self, destination):
+        self.writer = csv.DictWriter(destination, fieldnames=[
             "message",
             "severity",
             "path",
