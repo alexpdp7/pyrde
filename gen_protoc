@@ -1,0 +1,3 @@
+#!/bin/sh
+
+protoc -I thirdparty/reviewdog/proto/rdf reviewdog.proto  --python_out=pyrde

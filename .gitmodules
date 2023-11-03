@@ -1,0 +1,3 @@
+[submodule "thirdparty/reviewdog"]
+	path = thirdparty/reviewdog
+	url = https://github.com/reviewdog/reviewdog.git
