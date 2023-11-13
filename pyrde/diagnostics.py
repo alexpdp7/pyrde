@@ -1,7 +1,10 @@
 import abc
 import dataclasses
+import json
 import sys
 import typing
+
+from google.protobuf import json_format
 
 from pyrde import reviewdog_pb2
 
@@ -107,3 +110,13 @@ class TextDiagnosticListener(DiagnosticListener):
     def send(self, diagnostic: Diagnostic):
         message = diagnostic.format.format(**diagnostic.args)
         print(f"{SEVERITIES_AS_TEXT[diagnostic.severity]} {diagnostic.path} +{diagnostic.start_line} {message}", file=sys.stderr, flush=True)
+
+
+class ReviewdogDiagnosticListener(DiagnosticListener):
+    def finish(self):
+        pass
+
+    def send(self, diagnostic: Diagnostic):
+        rd = diagnostic.as_reviewdog_diagnostic()
+        # json_format.MessageToJson does multiline JSON
+        print(json.dumps(json_format.MessageToDict(rd)))
