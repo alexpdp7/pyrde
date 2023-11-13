@@ -6,7 +6,7 @@ authors = ["alex <alex@pdp7.net>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-pyrde = {path = ".."}
+pyrde = {path = "..", develop = true}
 
 [tool.poetry.dev-dependencies]
 
