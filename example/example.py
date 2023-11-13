@@ -19,7 +19,7 @@ def main():
         content = file.read_text()
         bad_lines = [(number, line) for number, line in enumerate(content.splitlines()) if "foo" in line]
         for number, line in bad_lines:
-            db.add_diagnostic("Line '{line}' contains foo", {"line": line}, diagnostics.Severity.ERROR, file, number, None, None, None, "BAD_LINE", None)
+            db.add_diagnostic("Line '{line}' contains foo", {"line": line}, diagnostics.Severity.ERROR, file, number + 1, None, None, None, "BAD_LINE", None)
             errors = True
 
     db.finish()
