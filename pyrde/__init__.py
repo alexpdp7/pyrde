@@ -4,6 +4,7 @@ import sys
 from pyrde import csv
 from pyrde import diagnostics
 
+
 def add_error_format_args(parser: argparse.ArgumentParser):
     parser.add_argument("--error-format", default="text", choices=["text", "csv"])
 

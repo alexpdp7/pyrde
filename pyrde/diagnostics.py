@@ -48,7 +48,7 @@ class Diagnostic:
         return reviewdog_pb2.Diagnostic(
             message=self.format.format(**self.args),
             location=reviewdog_pb2.Location(
-                path=self.path,
+                path=str(self.path),
                 range=reviewdog_pb2.Range(
                     start=reviewdog_pb2.Position(
                         line=self.start_line,
@@ -58,7 +58,7 @@ class Diagnostic:
                 ),
             ),
             severity=self.severity,
-            code=self.code_pb,
+            code=code_pb,
             # TODO:
             source=None,
             suggestions=None,
