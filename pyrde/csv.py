@@ -1,13 +1,24 @@
 import csv
-import sys
 
-import pyrde
-from pyrde import reviewdog_pb2
+from pyrde import diagnostics
 
 
-class CSVDiagnosticListener(pyrde.DiagnosticListener):
+class CSVDiagnosticListener(diagnostics.DiagnosticListener):
     def __init__(self, destination):
-        self.writer = csv.DictWriter(destination, fieldnames=[
+        self.destination = destination
+        self.diagnostics = []
+
+    def send(self, diagnostic: diagnostics.Diagnostic):
+        self.diagnostics.append(diagnostic)
+
+    def finish(self):
+        extra_columns = []
+        for diagnostic in self.diagnostics:
+            for arg_name in diagnostic.args.keys():
+                if arg_name not in extra_columns:
+                    extra_columns.append(arg_name)
+
+        writer = csv.DictWriter(self.destination, fieldnames=[
             "message",
             "severity",
             "path",
@@ -17,18 +28,23 @@ class CSVDiagnosticListener(pyrde.DiagnosticListener):
             "end_column",
             "code",
             "code_url",
-        ])
-        self.writer.writeheader()
+        ] + extra_columns)
+        writer.writeheader()
 
-    def send(self, diagnostic: reviewdog_pb2.Diagnostic):
-        self.writer.writerow({
-            "message": diagnostic.message,
-            "severity": diagnostic.severity,
-            "path": diagnostic.location.path,
-            "start_line": diagnostic.location.range.start.line,
-            "start_column": diagnostic.location.range.start.column,
-            "end_line": diagnostic.location.range.end.line if diagnostic.location.range.end else None,
-            "end_column": diagnostic.location.range.end.column if diagnostic.location.range.end else None,
-            "code": diagnostic.code.value if diagnostic.code else None,
-            "code_url": diagnostic.code.url if diagnostic.code else None,
-        })
+        for diagnostic in self.diagnostics:
+            row = {
+                "severity": diagnostics.SEVERITIES_AS_TEXT[diagnostic.severity],
+                "path": diagnostic.path,
+                "start_line": diagnostic.start_line,
+                "start_column": diagnostic.start_column,
+                "end_line": diagnostic.end_line,
+                "end_column": diagnostic.end_column,
+                "code": diagnostic.code,
+                "code_url": diagnostic.code_url,
+                "message": diagnostic.format.format(**diagnostic.args),
+            }
+
+            for extra_column in extra_columns:
+                row[extra_column] = diagnostic.args.get(extra_column)
+
+            writer.writerow(row)
