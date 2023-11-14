@@ -34,6 +34,7 @@ class Diagnostic:
     end_column: int = None
     code: str = None
     code_url: str = None
+    long_format: str = None
 
     def as_reviewdog_diagnostic(self):
         end = None
@@ -95,8 +96,9 @@ class DiagnosticBuilder:
             end_column: int = None,
             code: str = None,
             code_url: str = None,
+            long_format: str = None,
     ):
-        diagnostic = Diagnostic(format, args, severity, path, start_line, start_column, end_line, end_column, code, code_url)
+        diagnostic = Diagnostic(format, args, severity, path, start_line, start_column, end_line, end_column, code, code_url, long_format)
         self.listener.send(diagnostic)
 
     def finish(self):
@@ -108,7 +110,7 @@ class TextDiagnosticListener(DiagnosticListener):
         pass
 
     def send(self, diagnostic: Diagnostic):
-        message = diagnostic.format.format(**diagnostic.args)
+        message = (diagnostic.long_format or diagnostic.format).format(**diagnostic.args)
         print(f"{SEVERITIES_AS_TEXT[diagnostic.severity]} {diagnostic.path} +{diagnostic.start_line} {message}", file=sys.stderr, flush=True)
 
 
