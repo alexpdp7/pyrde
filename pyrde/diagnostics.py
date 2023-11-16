@@ -111,7 +111,8 @@ class TextDiagnosticListener(DiagnosticListener):
 
     def send(self, diagnostic: Diagnostic):
         message = (diagnostic.long_format or diagnostic.format).format(**diagnostic.args)
-        print(f"{SEVERITIES_AS_TEXT[diagnostic.severity]} {diagnostic.path} +{diagnostic.start_line} {message}", file=sys.stderr, flush=True)
+        line_info = f"+{diagnostic.start_line} " if diagnostic.start_line else ""
+        print(f"{SEVERITIES_AS_TEXT[diagnostic.severity]} {diagnostic.code} {diagnostic.path} {line_info}\n    {message}\n", file=sys.stderr, flush=True)
 
 
 class ReviewdogDiagnosticListener(DiagnosticListener):
